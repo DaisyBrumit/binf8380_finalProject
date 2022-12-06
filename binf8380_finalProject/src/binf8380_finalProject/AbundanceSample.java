@@ -82,6 +82,8 @@ public class AbundanceSample
 				
 				sampleList.add(new AbundanceSample(tmp_id, tmp_map)); // append current sample to the overall list
 			}
+			
+			s.close(); // close the scanner
 		}
 		
 		reader.close();
