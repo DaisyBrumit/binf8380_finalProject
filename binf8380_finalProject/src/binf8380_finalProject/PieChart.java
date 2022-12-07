@@ -4,22 +4,24 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
+//import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.util.SortOrder;
 
 public class PieChart {
 	private final AbundanceSample data;
-	private final ChartPanel piePanel;
+	//private final ChartPanel piePanel;
+	private final JFreeChart pieChart;
 	
 	public PieChart(AbundanceSample data) {
 		this.data = data;
-		this.piePanel = makePie();
+		//this.piePanel = makePie();
+		this.pieChart = makePie();
 	}
 	
 	
-	private ChartPanel makePie() {
+	private /*ChartPanel*/ JFreeChart makePie() {
 		// set title using current data ID
 		String title = "Composition of " + data.getID() + " by Proportion";
 		
@@ -40,12 +42,14 @@ public class PieChart {
 				false, // tool tips 
 				false); // URLsfalse
 		
-		ChartPanel piePanel = new ChartPanel(chart);
-		return piePanel;
+		//ChartPanel piePanel = new ChartPanel(chart);
+		//return piePanel;
+		return chart;
 	}
 	
-	public ChartPanel getPie() {
-		return piePanel;
+	public /*ChartPanel*/ JFreeChart getPie() {
+		//return piePanel;
+		return pieChart;
 	}
 	
 	public AbundanceSample getData() {
