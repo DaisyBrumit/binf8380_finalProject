@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
+import javax.swing.JOptionPane;
+
 public class AbundanceSample 
 {
 	private String id;
@@ -68,18 +70,17 @@ public class AbundanceSample
 				
 				firstLine = false; // only do this once
 			}
-				
 			else
 			{
 				List<String> tmp_values = Arrays.asList(currentLine.split(",")); // tmp values as string split by comma
 				tmp_id = tmp_values.get(0); //first value is the sample ID
-				
+					
 				for(int i=1; i<tmp_values.size(); i++) // subsequent values are abundance data
 				{
 					BigDecimal abundanceValue = new BigDecimal(tmp_values.get(i));
 					tmp_map.put(keys.get(i), abundanceValue);
 				}
-				
+					
 				sampleList.add(new AbundanceSample(tmp_id, tmp_map)); // append current sample to the overall list
 			}
 			
@@ -125,4 +126,3 @@ public class AbundanceSample
 		}
 	}
 }
-
