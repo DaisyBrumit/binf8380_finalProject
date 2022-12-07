@@ -35,8 +35,8 @@ public class AbundanceGUI extends JFrame {
 	
 	// buttons and labels
 	private JLabel promptLabel = new JLabel(); // instructions (NORTH 'panel')
-	private final JButton uploadButton = new JButton("upload .csv"); // bottomPanel
-	//private final JButton singleButton = new JButton("View Available Samples"); // bottomPanel
+	private final JButton uploadButton = new JButton("Upload .csv"); // bottomPanel
+	private final JButton resetButton = new JButton("Clear Current Chart"); // bottomPanel
 	private final JButton saveButton = new JButton("Save Current Chart"); // bottomPanel
 	
 	private AbundanceGUI() {
@@ -55,7 +55,7 @@ public class AbundanceGUI extends JFrame {
 		bottomPanel.add(uploadButton);
 				
 		uploadButton.addActionListener(new uploadListener());
-		//singleButton.addActionListener(new singleSampleListener());
+		resetButton.addActionListener(new resetListener());
 		saveButton.addActionListener(new saveListener());
 				
 		// add panels
@@ -82,10 +82,11 @@ public class AbundanceGUI extends JFrame {
 				setSamplePanel();
 						
 				// only add new buttons after FetchData() works
-				promptLabel.setText("Select single or multi sample viewing option.");
-				//bottomPanel.add(singleButton); // single view
+				promptLabel.setText("Select desired sample for viewing!");
+				bottomPanel.add(resetButton); // single view
 				bottomPanel.add(saveButton);
 				saveButton.setEnabled(false); // nothing to save yet!
+				resetButton.setEnabled(false); // nothing to clear yet!
 				
 				// remove existing figures
 				setVisible(true);
@@ -95,15 +96,15 @@ public class AbundanceGUI extends JFrame {
 			}}
 	}
 	
-	/*
-	private class singleSampleListener implements ActionListener {
+	private class resetListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			setSamplePanel();
-			//setVisible(true);
+			figurePanel.removeAll();
+			figurePanel.repaint();
+			resetButton.setEnabled(false);
+			saveButton.setEnabled(false);
 		}
 	}
-	*/
 	
 	private class saveListener implements ActionListener{
 		@Override
@@ -130,10 +131,12 @@ public class AbundanceGUI extends JFrame {
 			
 			// call chart object
 			PieChart pieObject = new PieChart(sample);
-			//ChartPanel piePanel = pieObject.getPie();
 			pieChart = pieObject.getPie();
 			figurePanel.add(new ChartPanel(pieChart));
+			
+			// enable extra options
 			saveButton.setEnabled(true); // save current image
+			resetButton.setEnabled(true); // clear chart space
 			
 			// repaint panel with new chart object
 			figurePanel.revalidate();
