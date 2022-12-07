@@ -17,10 +17,14 @@ import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
 
 public class AbundanceGUI extends JFrame {
 	// List of samples available at any one time
-	private List<AbundanceSample> sampleList = new ArrayList<AbundanceSample>();
+	private static List<AbundanceSample> sampleList = new ArrayList<AbundanceSample>();
+	// Current chart in use at any given time
+	private static JFreeChart pieChart;
 	private static final long serialVersionUID = 1L;
 	
 	// panels
@@ -28,16 +32,16 @@ public class AbundanceGUI extends JFrame {
 	private JPanel figurePanel = new JPanel(); // holds figures
 	private JPanel bottomPanel = new JPanel(); // holds (most) buttons
 	private JPanel samplePanel = new JPanel(); // holds a list of available samples
-	//private JScrollPane samplePane = new JScrollPane(); // help view samplePanel
 	
 	// buttons and labels
 	private JLabel promptLabel = new JLabel(); // instructions (NORTH 'panel')
 	private final JButton uploadButton = new JButton("upload .csv"); // bottomPanel
-	private final JButton singleButton = new JButton("Single Sample View"); // bottomPanel
+	//private final JButton singleButton = new JButton("View Available Samples"); // bottomPanel
+	private final JButton saveButton = new JButton("Save Current Chart"); // bottomPanel
 	
 	private AbundanceGUI() {
 		// basic window
-		super("Composition Viewer 1.2");
+		super("Composition Viewer 1.3");
 		setSize(800,800);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
 		getContentPane().setLayout(new BorderLayout());
@@ -51,7 +55,8 @@ public class AbundanceGUI extends JFrame {
 		bottomPanel.add(uploadButton);
 				
 		uploadButton.addActionListener(new uploadListener());
-		singleButton.addActionListener(new singleSampleListener());
+		//singleButton.addActionListener(new singleSampleListener());
+		saveButton.addActionListener(new saveListener());
 				
 		// add panels
 		getContentPane().add(promptPanel, BorderLayout.NORTH);
@@ -74,11 +79,14 @@ public class AbundanceGUI extends JFrame {
 				
 				// try to get data
 				FetchData();
+				setSamplePanel();
 						
 				// only add new buttons after FetchData() works
 				promptLabel.setText("Select single or multi sample viewing option.");
-				bottomPanel.add(singleButton); // single view
-					
+				//bottomPanel.add(singleButton); // single view
+				bottomPanel.add(saveButton);
+				saveButton.setEnabled(false); // nothing to save yet!
+				
 				// remove existing figures
 				setVisible(true);
 			} catch (Exception e1) {
@@ -87,11 +95,25 @@ public class AbundanceGUI extends JFrame {
 			}}
 	}
 	
+	/*
 	private class singleSampleListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			setSamplePanel();
 			//setVisible(true);
+		}
+	}
+	*/
+	
+	private class saveListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				saveChart();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 	
@@ -108,8 +130,10 @@ public class AbundanceGUI extends JFrame {
 			
 			// call chart object
 			PieChart pieObject = new PieChart(sample);
-			ChartPanel piePanel = pieObject.getPie();
-			figurePanel.add(piePanel);
+			//ChartPanel piePanel = pieObject.getPie();
+			pieChart = pieObject.getPie();
+			figurePanel.add(new ChartPanel(pieChart));
+			saveButton.setEnabled(true); // save current image
 			
 			// repaint panel with new chart object
 			figurePanel.revalidate();
@@ -129,6 +153,25 @@ public class AbundanceGUI extends JFrame {
 		if (return_value == JFileChooser.APPROVE_OPTION) {
 			File file = chooseFile.getSelectedFile();
 			sampleList = AbundanceSample.readAbundanceTable(file);
+		}
+		
+	}
+	
+	private void saveChart() throws Exception
+	{
+		final FileNameExtensionFilter png_filter = new FileNameExtensionFilter("PNG file", "png");
+		JFileChooser fileDestChooser = new JFileChooser();
+		fileDestChooser.setFileFilter(png_filter);
+		int return_value = fileDestChooser.showSaveDialog(null);
+		
+		if (return_value == JFileChooser.APPROVE_OPTION) {
+			File file = fileDestChooser.getSelectedFile();
+			ChartPanel outPanel = new ChartPanel(pieChart);
+			outPanel.setSize(800,800);
+			ChartUtilities.saveChartAsPNG(file, 
+			    	pieChart,
+			    	outPanel.getWidth(),
+			        outPanel.getHeight());
 		}
 	}
 	
