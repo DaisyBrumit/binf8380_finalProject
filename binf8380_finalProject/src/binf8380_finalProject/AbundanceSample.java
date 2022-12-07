@@ -42,6 +42,7 @@ public class AbundanceSample
 		return values.get(taxa);
 	}
 	
+	// getter: single proportion value given desired taxa
 	public BigDecimal getTaxaProportion(String taxa)
 	{
 		return proportions.get(taxa);
@@ -58,33 +59,44 @@ public class AbundanceSample
 		
 		for (String nextLine = reader.readLine(); nextLine != null; nextLine = reader.readLine())
 		{
-			String tmp_id = "";
-			HashMap<String, BigDecimal> tmp_map = new HashMap<String, BigDecimal>();
+			// framework for reading and populating a list of samples
+			String tmp_id = ""; // each sample gets a sample id
+			HashMap<String, BigDecimal> tmp_map = new HashMap<String, BigDecimal>(); // holds taxa/value pairs per sample
 			Scanner s = new Scanner(nextLine).useDelimiter("\t"); // splits each line by tab
 			String currentLine = s.next();
 			
-			if (firstLine) // return header as keys
-			{
-				keys = Arrays.asList(currentLine.split(","));
-				//System.out.println(keys.get(0).toString());
-				
-				firstLine = false; // only do this once
-			}
-			else
-			{
-				List<String> tmp_values = Arrays.asList(currentLine.split(",")); // tmp values as string split by comma
-				tmp_id = tmp_values.get(0); //first value is the sample ID
-					
-				for(int i=1; i<tmp_values.size(); i++) // subsequent values are abundance data
+			// throw a message to the user if parsing fails
+			try {
+				if (firstLine) // return header as keys
 				{
-					BigDecimal abundanceValue = new BigDecimal(tmp_values.get(i));
-					tmp_map.put(keys.get(i), abundanceValue);
-				}
+					keys = Arrays.asList(currentLine.split(","));
+					//System.out.println(keys.get(0).toString());
 					
-				sampleList.add(new AbundanceSample(tmp_id, tmp_map)); // append current sample to the overall list
+					firstLine = false; // only do this once
+				}
+				else
+				{
+					List<String> tmp_values = Arrays.asList(currentLine.split(",")); // tmp values as string split by comma
+					tmp_id = tmp_values.get(0); //first value is the sample ID
+						
+					for(int i=1; i<tmp_values.size(); i++) // subsequent values are abundance data
+					{
+						BigDecimal abundanceValue = new BigDecimal(tmp_values.get(i));
+						tmp_map.put(keys.get(i), abundanceValue);
+					}
+						
+					sampleList.add(new AbundanceSample(tmp_id, tmp_map)); // append current sample to the overall list
+				}
 			}
-			
-			s.close(); // close the scanner
+			catch(Exception e) {
+				// throw up an error message externally
+				JOptionPane.showMessageDialog(null, "Can't load in data! Make sure: "
+						+ "\nData is numeric \nHeader contains taxa labels");
+				break;
+			}
+			finally {
+				s.close(); // close the scanner	
+			}
 		}
 		
 		reader.close();
