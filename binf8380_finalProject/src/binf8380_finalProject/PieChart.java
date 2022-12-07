@@ -11,17 +11,15 @@ import org.jfree.util.SortOrder;
 
 public class PieChart {
 	private final AbundanceSample data;
-	//private final ChartPanel piePanel;
 	private final JFreeChart pieChart;
 	
 	public PieChart(AbundanceSample data) {
 		this.data = data;
-		//this.piePanel = makePie();
 		this.pieChart = makePie();
 	}
 	
 	
-	private /*ChartPanel*/ JFreeChart makePie() {
+	private JFreeChart makePie() {
 		// set title using current data ID
 		String title = "Composition of " + data.getID() + " by Proportion";
 		
@@ -36,22 +34,20 @@ public class PieChart {
 		// sort pieData
 		pieData.sortByValues(SortOrder.DESCENDING);
 
-		// make chart & panel
+		// make chart
 		JFreeChart chart = ChartFactory.createPieChart(title, pieData, 
 				true, //legend 
 				false, // tool tips 
 				false); // URLsfalse
-		
-		//ChartPanel piePanel = new ChartPanel(chart);
-		//return piePanel;
 		return chart;
 	}
 	
-	public /*ChartPanel*/ JFreeChart getPie() {
-		//return piePanel;
+	// return the pie chart object (NOT a panel)
+	public JFreeChart getPie() {
 		return pieChart;
 	}
 	
+	// return data used in making the pie chart... just in case
 	public AbundanceSample getData() {
 		return data;
 	}
